@@ -33,12 +33,6 @@ public class GildedRoseTest {
     }
 
     @Test
-    public void item_name() {
-        final Item item = createStandardItem();
-        assertEquals(STANDARD_NAME, item.name);
-    }
-
-    @Test
     public void aged_brie_quality_100() {
         item.name = "Aged Brie";
         item.quality = 100;
