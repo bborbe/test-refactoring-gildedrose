@@ -6,103 +6,98 @@ import org.junit.Test;
 
 public class GildedRoseTest {
 
+    private static final int STANDARD_SELLIN = 10;
+
+    public static final int STANDARD_QUALITY = 20;
+
+    public static final String STANDARD_NAME = "Standard-Item";
+
+    private final Item item = createStandardItem();
+
+    private GildedRose app = new GildedRose(new Item[] { item });
+
     @Test
-    public void ShouldUpdateQualityAndSellInCorrectlyWhileNotChangingNames() {
-        Item[] items = new Item[] { new Item("+5 Dexterity Vest", 10, 20),
-                new Item("Aged Brie", 0, 0),
-                new Item("Elixir of the Mongoose", 5, 7),
-                new Item("Sulfuras, Hand of Ragnaros", 0, 0),
-                new Item("Sulfuras, Hand of Ragnaros", -1, 100),
-                new Item("Backstage passes to a TAFKAL80ETC concert", 15, 20),
-                new Item("Backstage passes to a TAFKAL80ETC concert", 15, 49)
-        };
-
-        GildedRose app = new GildedRose(items);
-
+    public void standard_item_quality() {
         app.updateQuality();
-
-        assertEquals("+5 Dexterity Vest", app.items[0].name);
-        assertEquals(9, app.items[0].sellIn);
-        assertEquals(19, app.items[0].quality);
-
-        assertEquals("Aged Brie", app.items[1].name);
-        assertEquals(2, app.items[1].quality);
-        assertEquals(-1, app.items[1].sellIn);
-
-        assertEquals("Elixir of the Mongoose", app.items[2].name);
-        assertEquals(4, app.items[2].sellIn);
-        assertEquals(6, app.items[2].quality);
-
-        assertEquals("Sulfuras, Hand of Ragnaros", app.items[3].name);
-        assertEquals(0, app.items[3].quality);
-        assertEquals(0, app.items[3].sellIn);
-
-        assertEquals("Sulfuras, Hand of Ragnaros", app.items[4].name);
-        assertEquals(100, app.items[4].quality);
-        assertEquals(-1, app.items[4].sellIn);
-
-        assertEquals("Backstage passes to a TAFKAL80ETC concert", app.items[5].name);
-        assertEquals(21, app.items[5].quality);
-        assertEquals(14, app.items[5].sellIn);
-
-        app.items[1].quality = 100;
-
-        app.updateQuality();
-
-        assertEquals(8, app.items[0].sellIn);
-        assertEquals(18, app.items[0].quality);
-
-        assertEquals(100, app.items[1].quality);
-        assertEquals(-2, app.items[1].sellIn);
-
-        assertEquals(3, app.items[2].sellIn);
-        assertEquals(5, app.items[2].quality);
-
-        assertEquals(0, app.items[3].quality);
-        assertEquals(0, app.items[3].sellIn);
-
-        assertEquals(100, app.items[4].quality);
-        assertEquals(-1, app.items[4].sellIn);
-
-        assertEquals(22, app.items[5].quality);
-        assertEquals(13, app.items[5].sellIn);
-
-        for (int i = 1; i <= 4; ++i) {
-            app.updateQuality();
-        }
-
-        assertEquals(27, app.items[5].quality);
-        assertEquals(9, app.items[5].sellIn);
-
-        assertEquals(50, app.items[6].quality);
-        assertEquals(9, app.items[6].sellIn);
-
-        for (int i = 1; i <= 5; ++i) {
-            app.updateQuality();
-        }
-
-        assertEquals(38, app.items[5].quality);
-        assertEquals(4, app.items[5].sellIn);
-
-        assertEquals(50, app.items[6].quality);
-        assertEquals(4, app.items[6].sellIn);
-
-        for (int i = 1; i <= 4; ++i) {
-            app.updateQuality();
-        }
-
-        assertEquals(50, app.items[5].quality);
-        assertEquals(0, app.items[5].sellIn);
-
-        assertEquals(50, app.items[6].quality);
-        assertEquals(0, app.items[6].sellIn);
-
-        app.updateQuality();
-
-        assertEquals(0, app.items[5].quality);
-        assertEquals(-1, app.items[5].sellIn);
-
-        assertEquals(0, app.items[6].quality);
-        assertEquals(-1, app.items[6].sellIn);
+        assertEquals(19, item.quality);
     }
+
+    private Item createStandardItem() {
+        return new Item("Standard-Item", STANDARD_SELLIN, STANDARD_QUALITY);
+    }
+
+    @Test
+    public void standard_item_sellin() {
+        app.updateQuality();
+        assertEquals(9, item.sellIn);
+    }
+
+    @Test
+    public void item_name() {
+        final Item item = createStandardItem();
+        assertEquals(STANDARD_NAME, item.name);
+    }
+
+    @Test
+    public void aged_brie_quality_100() {
+        item.name = "Aged Brie";
+        item.quality = 100;
+        app.updateQuality();
+        assertEquals(100, item.quality);
+    }
+
+    @Test
+    public void aged_brie_quality_0() {
+        item.name = "Aged Brie";
+        item.sellIn = 0;
+        app.updateQuality();
+        assertEquals(STANDARD_QUALITY + 2, item.quality);
+    }
+
+    @Test
+    public void ragnaros_quality_do_not_change() {
+        item.name = "Sulfuras, Hand of Ragnaros";
+        app.updateQuality();
+        assertEquals(STANDARD_QUALITY, item.quality);
+    }
+
+    @Test
+    public void ragnaros_sellin_do_not_change() {
+        item.name = "Sulfuras, Hand of Ragnaros";
+        app.updateQuality();
+        assertEquals(STANDARD_SELLIN, item.sellIn);
+    }
+
+    @Test
+    public void item5_quality_sellin_10() {
+        item.name = "Backstage passes to a TAFKAL80ETC concert";
+        item.sellIn = 10;
+        app.updateQuality();
+        assertEquals(STANDARD_QUALITY + 2, item.quality);
+    }
+
+    @Test
+    public void item5_quality_sellin_5() {
+        item.name = "Backstage passes to a TAFKAL80ETC concert";
+        item.sellIn = 5;
+        app.updateQuality();
+        assertEquals(STANDARD_QUALITY + 3, item.quality);
+    }
+
+    @Test
+    public void item5_quality_sellin_0() {
+        item.name = "Backstage passes to a TAFKAL80ETC concert";
+        item.sellIn = 0;
+        app.updateQuality();
+        assertEquals(0, item.quality);
+    }
+
+    @Test
+    public void item5_quality_max_50() {
+        item.name = "Backstage passes to a TAFKAL80ETC concert";
+        item.quality = 50;
+        app.updateQuality();
+        assertEquals(50, item.quality);
+    }
+
 }
